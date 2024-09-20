@@ -7,6 +7,7 @@ local settings = {
     drag_time = 0.5;
 };
 
+
 local Drawing = loadstring(game:HttpGet("https://pastebin.com/raw/y1fUdmWF"))()
 local Tween = loadstring(game:HttpGet("https://pastebin.com/raw/udzip5rD"))()
 
@@ -246,23 +247,6 @@ function utility.outline(obj, color, zin, ignore)
     return outline
 end
 
-function utility.create(class, properties, ignore)
-    local obj = drawing:new(class)
-    if not ignore then
-        table.insert(library.drawings, obj)
-    end
-    library.drawing_amount = library.drawing_amount + 1
-    for prop, v in next, properties do
-        if prop == "Theme" then
-            themeobjects[obj] = v
-            obj.Color = library.theme[v]
-        else
-            obj[prop] = v
-        end
-    end
-
-    return obj
-end
 
 function utility.changeobjecttheme(object, color)
     themeobjects[object] = color
@@ -512,100 +496,6 @@ function library.update_notifications2(drawing) -- i hate this i hate this...
     end
 end
 
-local tooltip_objects = {};
-local tooltip_in_use = false;
-do  
-    local z = 10;
-    tooltip_objects.holder = utility.create('Square', {
-        Position = UDim2.new(0, 0, 0, 75);
-        Transparency = 0;
-        Thickness = 1;
-    })
-    
-    tooltip_objects.background = utility.create('Square', {
-        Size = UDim2.new(1,0,1,0);
-        Position = UDim2.new(0, -500, 0, 0);
-        Parent = tooltip_objects.holder;
-        Color = Color3.fromRGB(13,13,13);
-        ZIndex = z;
-        Thickness = 1;
-        Filled = true;
-    })
-
-    tooltip_objects.border1 = utility.create('Square', {
-        Size = UDim2.new(1,2,1,2);
-        Position = UDim2.new(0,-1,0,-1);
-        Color = Color3.fromRGB(50,50,50);
-        Parent = tooltip_objects.background;
-        ZIndex = z-1;
-        Thickness = 1;
-        Filled = true;
-    })
-
-    tooltip_objects.border2 = utility.create('Square', {
-        Size = UDim2.new(1,2,1,2);
-        Position = UDim2.new(0,-1,0,-1);
-        Color = Color3.fromRGB(0,0,0);
-        Parent = tooltip_objects.border1;
-        ZIndex = z-2;
-        Thickness = 1;
-        Filled = true;
-    })
-
-    tooltip_objects.gradient = utility.create('Image', {
-        Size = UDim2.new(1,0,1,0);
-        Data = images.gradient90;
-        Parent = tooltip_objects.background;
-        Transparency = .5;
-        ZIndex = z+1;
-    })
-
-    tooltip_objects.accentBar = utility.create('Square',{
-        Size = UDim2.new(0,1,1,1);
-        Position = UDim2.new(0,-1,0,0);
-        Parent = tooltip_objects.background;
-        Theme = color == nil and 'Accent' or '';
-        ZIndex = z+5;
-        Thickness = 1;
-        Filled = true;
-    })
-
-    tooltip_objects.text = utility.create('Text', {
-        Position = UDim2.new(0,5,0,2);
-        Theme = 'Text';
-        Text = "";
-        Outline = true;
-        Font = 2;
-        Size = 13;
-        ZIndex = z+4;
-        Parent = tooltip_objects.background;
-    })
-end;
-
--- // Function
-function tooltip(options, text, obj)
-    obj.MouseEnter:Connect(function()
-        tooltip_objects.holder.Visible = (options.tooltip == '' or options.tooltip == nil) or (options.ToolTip == '' or options.ToolTip == nil) or (text == '' or text == nil) and false or true;
-        tooltip_objects.text.Position = UDim2.new(0,3,0,0)
-        tooltip_objects.text.Text = options.tip_text or options.Tip_Text or '';
-        tooltip_in_use = obj;
-    end);
-    obj.MouseLeave:Connect(function()
-        if tooltip_in_use == obj then
-            tooltip_in_use = nil;
-            tooltip_objects.holder.Visible = false;
-        end;
-    end);
-end;
-
--- // Tooltip connection
-utility.connect(services.InputService.InputChanged, function(input)
-    if tooltip_in_use then
-        local Position = services.InputService:GetMouseLocation();
-        tooltip_objects.holder.Position = UDim2.new(0,Position.X + 525,0,Position.Y)
-        tooltip_objects.holder.Size = UDim2.new(0,tooltip_objects.text.TextBounds.X + 6 , 0, tooltip_objects.text.TextBounds.Y + 2)
-    end
-end)
 
 -- ui functions
 local keys = {
